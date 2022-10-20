@@ -85,4 +85,5 @@ public class RegController {
 		return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
 		
 	}
+	
 }
