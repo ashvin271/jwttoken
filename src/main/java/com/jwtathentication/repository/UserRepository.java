@@ -8,7 +8,7 @@ import com.jwtathentication.entity.User;
 
 
 @Repository
-public interface UserRepository  extends JpaRepository<User, Integer>{
+public interface UserRepository  extends JpaRepository<User, Long>{
 
 	@Query("select u from User u where u.username=?1")
 	public User getUserByUserName(String email);

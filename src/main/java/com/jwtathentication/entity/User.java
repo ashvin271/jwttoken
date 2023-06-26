@@ -6,15 +6,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name="user") 
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private int id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
   private String username;
   private String password;
   private String firstName;
@@ -52,7 +50,12 @@ public String getRole() {
 public void setRole(String role) {
 	this.role = role;
 }
-  
-  
-  
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

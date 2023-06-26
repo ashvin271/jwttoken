@@ -1,10 +1,21 @@
 package com.jwtathentication.utility;
 
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResponseMessage<T> {
 	private Integer status;
 	private String message;
 	private T data;
-	
+	private List<?> dataList;
 	
 	public ResponseMessage(Integer status, String message, T data) {
 		super();
@@ -12,24 +23,13 @@ public class ResponseMessage<T> {
 		this.message = message;
 		this.data = data;
 	}
-	public Integer getStatus() {
-		return status;
-	}
-	public void setStatus(Integer status) {
+
+	public ResponseMessage(Integer status, String message, List<?> dataList) {
+		super();
 		this.status = status;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
 		this.message = message;
-	}
-	public T getData() {
-		return data;
-	}
-	public void setData(T data) {
-		this.data = data;
+		this.dataList = dataList;
 	}
 	
-	
+
 }

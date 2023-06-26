@@ -2,23 +2,27 @@ package com.jwtathentication.payload;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * This class provides Authentication Parameter for Login.
+ * 
+ * @author ashvin
+ *
+ */
 public class LoginRequest {
 
-	@NotBlank(message = "grant Type can't be empty.")
-	private String grant_type;
-	
 	@NotBlank(message = "Username can't be empty.")
-	private String username;
+	private String email;
 
 	@NotBlank(message = "Password can't be empty.")
 	private String password;
-	
-	public String getUsername() {
-		return username;
+
+
+	public String getEmail() {
+		return email;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
@@ -28,13 +32,21 @@ public class LoginRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public String getGrant_type() {
-		return grant_type;
+	
+	public LoginRequest() {
+		super();
 	}
 
-	public void setGrant_type(String grant_type) {
-		this.grant_type = grant_type;
+	public LoginRequest(String email,String password) {
+		super();
+		this.email = email;
+		this.password = password;
 	}
+
+	@Override
+	public String toString() {
+		return "LoginRequest [email=" + email + ", password=" + password + "]";
+	}
+
 	
 }

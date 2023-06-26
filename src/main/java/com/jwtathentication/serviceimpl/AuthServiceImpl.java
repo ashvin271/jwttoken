@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.jwtathentication.config.UserDetailsServiceImpl;
 import com.jwtathentication.helper.JwtUtil;
 import com.jwtathentication.payload.JwtAuthenticationResponse;
-import com.jwtathentication.payload.LoginRequest1;
+import com.jwtathentication.payload.LoginRequest;
 import com.jwtathentication.service.AuthService;
 import com.jwtathentication.service.UserService;
 
@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService{
 	private UserService userService;
 
 	@Override
-	public JwtAuthenticationResponse authenticateUser(LoginRequest1 loginRequest) {
+	public JwtAuthenticationResponse authenticateUser(LoginRequest loginRequest) {
 		
 		try {
 			Authentication authentication = authenticationManager.authenticate(

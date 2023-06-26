@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jwtathentication.entity.User;
 import com.jwtathentication.service.UserService;
-import com.jwtathentication.utility.ResponseMessage1;
-import com.sun.org.slf4j.internal.Logger;
+import com.jwtathentication.utility.ResponseMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +25,8 @@ public class UserController {
 	
 
 	@GetMapping("/getUser")
-	public ResponseMessage1<List<User>> getUsers(){
-		return new ResponseMessage1<>(HttpStatus.OK.value(), "Successfully Get All User",userService.getAllUsers());
+	public ResponseMessage<List<User>> getUsers(){
+		log.info("get all users");
+		return new ResponseMessage<>(HttpStatus.OK.value(), "Successfully Get All User",userService.getAllUsers());
 	}
 }
