@@ -39,7 +39,7 @@ jobs:
     - name: Start containers
       run: docker-compose -f "docker-compose.yml" up -d --build
       with:
-          image: ashvin271/docker-compose -d
+          image: ashvin271/jwt-token-api
 
           tags: v1, latest
           registry: docker.io
