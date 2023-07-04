@@ -36,12 +36,15 @@ jobs:
 
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
       with:
-          image: ashvin271/jwt-token-api
+          image: ashvin271/docker-compose -d
+
           tags: v1, latest
           registry: docker.io
           #dockerfile: Dockerfile
-          compose-file: "./docker-compose.yml"
+         # compose-file: "./docker-compose.yml"
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
