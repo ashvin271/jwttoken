@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jwtathentication.payload.JwtAuthenticationResponse;
-import com.jwtathentication.payload.LoginRequest1;
+import com.jwtathentication.payload.LoginRequest;
 import com.jwtathentication.service.AuthService;
-import com.jwtathentication.utility.ResponseMessage1;
+import com.jwtathentication.utility.ResponseMessage;
 
 @RestController
 @CrossOrigin
@@ -22,8 +22,8 @@ public class AuthController {
 	private AuthService authService;
 	
 	@PostMapping("/token")
-	public ResponseMessage1<JwtAuthenticationResponse>  authenticateUser(@Valid  @RequestBody LoginRequest1 request){
-		return new ResponseMessage1<>(HttpStatus.OK.value(), "Successfully login",
+	public ResponseMessage<JwtAuthenticationResponse>  authenticateUser(@Valid  @RequestBody LoginRequest request){
+		return new ResponseMessage<>(HttpStatus.OK.value(), "Successfully login",
 				authService.authenticateUser(request));
 	}
 }

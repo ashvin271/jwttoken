@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity 
@@ -48,7 +49,12 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		.disable()
 		.cors()
 		.disable()
-		.authorizeRequests().antMatchers("/token","/register/**").permitAll()
+		.authorizeRequests().antMatchers("/token","/register/**","/batch/**","/task/**").permitAll()
+		.antMatchers("/swagger-ui/**",
+				"/v3/api-docs/**",
+				"/v2/api-docs/**",
+				"/swagger-resources/**",
+				"/webjars/**").permitAll()
 		.anyRequest().authenticated()
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
@@ -56,4 +62,5 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+	
 }

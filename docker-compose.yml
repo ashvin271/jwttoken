@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+   dbservice:
+       container_name: mysql-container
+       image: mysql
+       environment:
+           - MYSQL_ROOT_PASSWORD=root
+       ports:
+           - 3307:3306
+       volumes:
+           - ./data:/var/lib/mysql
+       networks:
+         - bootapp
+   appservice:
+       container_name: jwt-outh-container
+       build: .
+       depends_on: 
+             - dbservice
+       environment: 
+              - spring.datasource.url=jdbc:mysql://dbservice:3307/jwt_project1?createDatabaseIfNotExist=true
+              - spring.datasource.username=root
+              - spring.datasource.password=root
+              - spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+              - spring.jpa.show-sql=true
+              - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+              - spring.jpa.hibernate.ddl-auto = update
+       ports:
+          - 9090:9090
+       networks:
+         - bootapp
+
+networks:
+   bootapp:
