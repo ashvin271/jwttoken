@@ -59,13 +59,14 @@ jobs:
 
     - name: Build and push MySQL image
       run: |
-          docker-compose build dbservice
-          docker-compose push dbservice
+            docker pull ashvin271/my-sql-repo:mysql:8.0
+            docker tag ashvin271/my-sql-repo:mysql:8.0 your-dockerhub-username/mysql-container:latest
+            docker push your-dockerhub-username/mysql-container:latest
 
-    - name: Build and push Java application imsage
+    - name: Build and push Java application image
       run: |
-              docker-compose build appservice
-              docker-compose push appservice
+            docker build -t ashvin271/jwt-token-api:latest .
+            docker push ashvin271/jwt-token-api:latest
 
 
 

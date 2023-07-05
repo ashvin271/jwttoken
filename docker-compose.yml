@@ -3,7 +3,8 @@ version: '3'
 services:
    dbservice:
        container_name: mysql-container
-       image: ashvin271/my-sql-repo:mysql:8.0
+       image: ashvin271/my-sql-repo
+       build: db.dockerfile
        environment:
            - MYSQL_ROOT_PASSWORD=root
        ports:
