@@ -6,7 +6,8 @@ services:
        build:
           context: .
           dockerfile: db.dockerfile
-       image: ashvin271/my-sql-repo:mysql
+       image: ashvin271/jwt-token-api:mysql
+       #image: mysql
        environment:
            - MYSQL_ROOT_PASSWORD=root
        ports:
@@ -19,6 +20,7 @@ services:
        container_name: jwt-outh-container
        build: .
        image: ashvin271/jwt-token-api:spring-boot-jwt
+       #image: spring-boot-jwt
        depends_on: 
              - dbservice
        environment: 
