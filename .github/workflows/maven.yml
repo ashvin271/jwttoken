@@ -61,6 +61,8 @@ jobs:
       run: |
           docker-compose build dbservice
           docker-compose push dbservice
+    - name: Push Docker image
+      run: docker-compose push
 
 #    - name: Build and push Java application image
 #      run: |
