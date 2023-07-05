@@ -14,7 +14,7 @@ services:
          - bootapp
    appservice:
        container_name: jwt-outh-container
-       image: ashvin271/jwt-token-api
+       build: .
        depends_on: 
              - dbservice
        environment: 
