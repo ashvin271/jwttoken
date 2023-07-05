@@ -59,13 +59,13 @@ jobs:
 
     - name: Build and push Spring Boot application image
       run: |
-            docker build -t ashvin271/jwt-outh-container:latest .
-            docker push ashvin271/jwt-outh-container:latest
+            docker build -t ashvin271ashvin271/jwt-token-api/jwt-outh-container:latest .
+            docker push ashvin271/jwt-token-api/jwt-outh-container:latest
 
     - name: Build and push MySQL image
       run: |
-            docker build -t ashvin271/mysql-container:latest -f mysql.Dockerfile .
-            docker push ashvin271/mysql-container:latest
+            docker build -t ashvin271/jwt-token-api/mysql-container:latest -f mysql.Dockerfile .
+            docker push ashvin271/jwt-token-api/mysql-container:latest
 
 
 
