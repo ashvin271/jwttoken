@@ -57,17 +57,15 @@ jobs:
 #    - name: Push Docker image
 #      run: docker-compose push
 
+    - name: Build and push Spring Boot application image
+      run: |
+            docker build -t ashvin271/jwt-outh-container:latest .
+            docker push ashvin271/jwt-outh-container:latest
+
     - name: Build and push MySQL image
       run: |
-          docker-compose build dbservice
-          docker-compose push dbservice
-    - name: Push Docker image
-      run: docker-compose push
-
-#    - name: Build and push Java application image
-#      run: |
-#              docker-compose build appservice
-#              docker-compose push appservice
+            docker build -t ashvin271/mysql-container:latest -f mysql.Dockerfile .
+            docker push ashvin271/mysql-container:latest
 
 
 
