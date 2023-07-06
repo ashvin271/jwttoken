@@ -3,7 +3,9 @@ version: '3'
 services:
    dbservice:
        container_name: mysql-container
-       image: mysql:latest
+       build: 
+          dockerfile: db.dockerfile
+       image: ashvin271/jwt-token-api:mysql
        environment:
            - MYSQL_ROOT_PASSWORD=root
        ports:
@@ -15,7 +17,7 @@ services:
    appservice:
        container_name: jwt-outh-container
        build: .
-       image: jwt-apis
+       image: ashvin271/jwt-token-api:jwt-apis
        depends_on: 
              - dbservice
        environment: 
