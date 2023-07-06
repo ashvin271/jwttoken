@@ -3,8 +3,9 @@ version: '3'
 services:
    dbservice:
        container_name: mysql-container
-       build: 
-          dockerfile: db.dockerfile
+       build:
+         context: .
+         dockerfile: db.dockerfile
        image: ashvin271/jwt-token-api:mysql
        environment:
            - MYSQL_ROOT_PASSWORD=root
