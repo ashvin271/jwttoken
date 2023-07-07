@@ -6,7 +6,7 @@ services:
        build:
          context: .
          dockerfile: db.dockerfile
-       image: mysql
+       image: ashvin271/jwt-token-api:mysql
        environment:
            - MYSQL_USER=root
            - MYSQL_PASSWORD=root
@@ -25,7 +25,7 @@ services:
        depends_on: 
              - dbservice
        environment: 
-              - spring.datasource.url=jdbc:mysql://dbservice:3307/jwt_project1?createDatabaseIfNotExist=true
+              - spring.datasource.url=jdbc:mysql://dbservice:3306/jwt_project1?createDatabaseIfNotExist=true
               - spring.datasource.username=root
               - spring.datasource.password=root
               - spring.datasource.driver-class-name=com.mysql.jdbc.Driver

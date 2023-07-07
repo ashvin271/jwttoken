@@ -46,6 +46,9 @@ jobs:
 #          password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Set up Docker Compose
+      run: docker-compose build
+
+    - name: Set up Docker Compose
       run: docker-compose up
 
     - name: Login to Docker Hub
