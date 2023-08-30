@@ -1,0 +1,13 @@
+<!-- changelog-master.xml -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <!-- Include the first changelog file -->
+    <include file="db/changelog/user-changelog.xml"/>
+     <include file="db/changelog/user-data-changelog.xml"/>
+
+    <!-- Include all changelog files matching the pattern changelog-*.xml -->
+   <!--  <includeAll path="db/changelog/" relativeToChangelogFile="true"/> -->
+</databaseChangeLog>

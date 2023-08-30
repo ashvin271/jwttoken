@@ -2,7 +2,11 @@ package com.jwtathentication.serviceimpl;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +42,11 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		System.out.println("get all user method call.....");
 		return UserRepository.findAll();
+	}
+
+	@Override
+	public ResponseEntity<?> getPdf(HttpServletRequest req, HttpServletResponse res) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
