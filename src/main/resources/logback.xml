@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="logDir" value="${LOG_PATH}" />
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t]- %msg%n</Pattern>
+    </encoder>
+</appender>
+
+
+
+	<appender name="FILE-ROLLING"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logDir}.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${logDir}/filename.%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<encoder>
+			<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t]- %msg%n</Pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<logger name="com.jwtathentication" level="info"
+		additivity="false">
+		<appender-ref ref="FILE-ROLLING" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	
+	<logger name="fileLogger" level="info"
+		additivity="false">
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="FILE-ROLLING" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</configuration>

@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtil {
+	
+	private final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 	
 
 	private String SECRET_KEY = "ashvin789";
@@ -103,15 +106,15 @@ public class JwtUtil {
 			Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(authToken);
 			return true;
 		} catch (SignatureException ex) {
-			JwtathenticationApplication.LOGGER.error("Invalid JWT signature");
+			log.error("Invalid JWT signature");
 		} catch (MalformedJwtException ex) {
-			JwtathenticationApplication.LOGGER.error("Invalid JWT token");
+			log.error("Invalid JWT token");
 		} catch (ExpiredJwtException ex) {
-			JwtathenticationApplication.LOGGER.error("Expired JWT token");
+			log.error("Expired JWT token");
 		} catch (UnsupportedJwtException ex) {
-			JwtathenticationApplication.LOGGER.error("Unsupported JWT token");
+			log.error("Unsupported JWT token");
 		} catch (IllegalArgumentException ex) {
-			JwtathenticationApplication.LOGGER.error("JWT claims string is empty.");
+			log.error("JWT claims string is empty.");
 		}
 		return false;
 	}

@@ -49,7 +49,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		.disable()
 		.cors()
 		.disable()
-		.authorizeRequests().antMatchers("/token","/register/**","/batch/**","/task/**").permitAll()
+		.authorizeRequests().antMatchers("/token","/register/**","/batch/**","/task/**","/actuator/**").permitAll()
 		.antMatchers("/swagger-ui/**",
 				"/v3/api-docs/**",
 				"/v2/api-docs/**",

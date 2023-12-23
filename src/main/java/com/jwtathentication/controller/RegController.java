@@ -5,20 +5,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.math3.analysis.function.Ceil;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -29,14 +21,19 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.RichTextString;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFPrintSetup;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -48,17 +45,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jwtathentication.dto.ExcelData;
 import com.jwtathentication.entity.User;
 import com.jwtathentication.service.UserService;
 import com.jwtathentication.utility.ResponseMessage;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
-import com.lowagie.text.Element;
 import com.lowagie.text.Font;
-import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -71,10 +66,16 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.RGBColor;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 
 @RestController
 @RequestMapping(value="/register") 
 public class RegController {
+	
+	 private final Logger log = LoggerFactory.getLogger(RegController.class);
 	
 	@Autowired
 	private UserService userService;
@@ -93,6 +94,11 @@ public class RegController {
 	 @GetMapping("/download-pdf")
 	    public ResponseEntity<?> downloadPdf(HttpServletResponse resp) throws IOException {
 	        
+		 log.trace("This is a TRACE level message");
+	        log.debug("This is a DEBUG level message");
+	        log.info("This is an INFO level message");
+	        log.warn("This is a WARN level message");
+	        log.error("This is an ERROR level message");
 		 try{
 			 ByteArrayOutputStream outputStream = generatePdf();
 		
@@ -139,21 +145,31 @@ public class RegController {
 	    private ByteArrayOutputStream generatePdf() throws IOException {
 	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-	        Document document = new Document(PageSize.A4,0,0,0,0);
+	        Document document = new Document(PageSize.A4.rotate(),0,0,0,0);
 	        PdfWriter writer = PdfWriter.getInstance(document, outputStream);
 	        
-	      
-	        HeaderFooter footer = new HeaderFooter(new Phrase(" "),false);
-            footer.setAlignment(Element.ALIGN_CENTER);
-            footer.setPadding(0);
-            footer.setBorder(0);
-            document.setFooter(footer);
+//	      
+//	        HeaderFooter footer = new HeaderFooter(new Phrase(" "),false);
+//            footer.setAlignment(Element.ALIGN_CENTER);
+//            footer.setPadding(0);
+//            footer.setBorder(0);
+//            document.setFooter(footer);
             
+           
           
             HeaderFooter1 header=new HeaderFooter1(writer,document);
             writer.setPageEvent(header);
             document.open();
-           	        
+            
+        
+            
+            PdfContentByte canvas = writer.getDirectContent();
+            canvas.rectangle(0,340, 500,200);
+         
+            canvas.setColorFill(Color.decode("#0000"));
+            canvas.setColorStroke(RGBColor.green);
+            canvas.stroke();
+           
 	      
 	        Font font = new Font(Font.HELVETICA, 12, Font.HELVETICA, Color.BLACK);
 	        PdfPTable table1 = new PdfPTable(1);
@@ -509,26 +525,46 @@ public class RegController {
 	    }
       
       @GetMapping("/download-excel")
-      public void getExcelSheet(HttpServletResponse response) {
-    	  FileOutputStream fileOut=null;
+      public ResponseEntity<?> getExcelSheet() {
+    	  ByteArrayResource resource=null;
+    	  HttpHeaders headers = new HttpHeaders();
+	      //  headers.setContentType(MediaType.APPLICATION_PDF);
+	        //headers.setContentDispositionFormData("attachment", "document_with_header_footer.pdf");
+	      //  headers.setContentType("");
+	       // headers.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
+	       
           try {
-			getExcel(response);
+        	  headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  	        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.xlsx");
+  	      resource= new ByteArrayResource(getExcel());
+  	        return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
           
       }
       
-      public void getExcel(HttpServletResponse response) throws IOException {
+      public byte[] getExcel() throws IOException {
+    	  ByteArrayOutputStream output= new ByteArrayOutputStream();
     	    // Create Excel workbook and sheet
-          HSSFWorkbook workbook = new HSSFWorkbook();
-          HSSFSheet sheet = workbook.createSheet("Data");
-          //Row row = sheet.createRow(1);
+          XSSFWorkbook workbook = new XSSFWorkbook();
+          XSSFSheet sheet = workbook.createSheet("Data");
           
-          // Create a cell and set some value
-          //Cell cell = row.createCell(1);
-        //  cell.setCellStyle(new Set);
+          XSSFPrintSetup printSetup = sheet.getPrintSetup();
+          printSetup.setPaperSize(HSSFPrintSetup.A4_PAPERSIZE);
+         
+         // Footer footer = sheet.getFooter();  
+          //Header he=sheet.getHeader();
+         // he.setCenter( "Page " + org.apache.poi.hssf.usermodel.HeaderFooter.page() + " of " + org.apache.poi.hssf.usermodel.HeaderFooter.numPages() );  
+          
+//          Footer footer =  workbook.getSheetAt(0).getFooter();
+//
+//          // Set the right section of the footer
+//          footer.setRight( "Page " + org.apache.poi.hssf.usermodel.HeaderFooter.page() + " of " + org.apache.poi.hssf.usermodel.HeaderFooter.numPages() );
           sheet.addMergedRegion(new CellRangeAddress(2, // first row (0-based)
                   3, // last row (0-based)
                   1, // first column (0-based)
@@ -552,33 +588,33 @@ public class RegController {
   		  File file = resource.getFile();
           FileInputStream imageFile = new FileInputStream(file.getPath());
           byte[] bytes = IOUtils.toByteArray(imageFile);
-          int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+          int pictureIdx = workbook.addPicture(bytes, workbook.PICTURE_TYPE_PNG);
           Picture picture = drawing.createPicture(anchor, pictureIdx);
           int desiredWidth = 2;
           int desiredHeight = 2;
           picture.resize(desiredWidth, desiredHeight);
         
-          HSSFFont font = workbook.createFont();
+          XSSFFont font = workbook.createFont();
           font.setBold(true);
-          HSSFRow row1 = sheet.createRow(5);
+          XSSFRow row1 = sheet.createRow(5);
           Cell cell = row1.createCell(1);
           
           RichTextString richText = workbook.getCreationHelper().createRichTextString("AXIS Bank Ltd \n\n Transaction Receipt \n corporate XXXXXXXX Limited <ABCD> \n Recipt Date :25-May-2021");
          
           // Create different font styles
-          HSSFFont font1 = workbook.createFont();
+          XSSFFont font1 = workbook.createFont();
           font1.setBold(true);
           font1.setFontHeightInPoints((short) 15);
           font1.setColor(IndexedColors.BLACK.getIndex()); // Font color black
 
-          HSSFFont font2 = workbook.createFont();
+          XSSFFont font2 = workbook.createFont();
           font2.setFontHeightInPoints((short) 11); 
           font2.setBold(true);
           font2.setColor(IndexedColors.BLACK.getIndex()); // Font color red
 
          
           richText.applyFont(0, 13, font1); 
-          richText.applyFont(18, 39, font2); 
+          richText.applyFont(17, 39, font2); 
           //richText.applyFont(40, 39, font2); 
           cell.setCellValue(richText);
 
@@ -587,48 +623,18 @@ public class RegController {
                   1, // first column (0-based)
                   10 // last column (0-based)
           ));
-//          HSSFRow row2 = sheet.createRow(7);
-//          Cell cell2 = row2.createCell(1);
-//          cell2.setCellValue("Transaction Recipt");
-//          sheet.addMergedRegion(new CellRangeAddress(7, // first row (0-based)
-//                  8, // last row (0-based)
-//                  1, // first column (0-based)
-//                  10 // last column (0-based)
-//          ));
-//          HSSFRow row3 = sheet.createRow(9);
-//          Cell cell3 = row3.createCell(1);
-//          cell3.setCellValue("corporate XXXXXXXX Limited <ABCD>");
-//          HSSFCellStyle celstyle1=workbook.createCellStyle();
-//          celstyle1.setBorderTop(BorderStyle.NONE);
-//          celstyle1.setBorderBottom(BorderStyle.NONE);
-//          cell3.setCellStyle(celstyle1);
-//          sheet.addMergedRegion(new CellRangeAddress(9, // first row (0-based)
-//                  9, // last row (0-based)
-//                  1, // first column (0-based)
-//                  10 // last column (0-based)
-//          ));
-//          HSSFRow row4 = sheet.createRow(10);
-//          Cell cell4 = row4.createCell(1);
-//          cell4.setCellValue("Recipt Date :25-May-2021");
-//          sheet.addMergedRegion(new CellRangeAddress(10, // first row (0-based)
-//                  10, // last row (0-based)
-//                  1, // first column (0-based)
-//                  10 // last column (0-based)
-//          ));
-          HSSFCellStyle celstyle=workbook.createCellStyle();
+
+          XSSFCellStyle celstyle=workbook.createCellStyle();
           celstyle.setFont(font);
           celstyle.setWrapText(true);
           cell.setCellStyle(celstyle);
          
           
-          // Create sample data
-//          List<ExcelData> dataList = new ArrayList<>();
-//          dataList.add(new ExcelData("John", 30));
-//          dataList.add(new ExcelData("Alice", 25));
-//          dataList.add(new ExcelData("Bob", 35));
-
-          // Create header row
-          HSSFRow headerRow = sheet.createRow(12);
+          XSSFRow headerRow = sheet.createRow(12);
+          int twips = 800; // Adjust this value as needed
+          headerRow.setHeight((short) twips);
+  
+          
           CellStyle headerStyle=headerStyling(workbook);
           Cell headerCell1 = headerRow.createCell(1);
           headerCell1.setCellValue("Name");
@@ -660,13 +666,27 @@ public class RegController {
           Cell headerCell8 = headerRow.createCell(7);
           headerCell8.setCellValue("checkOut");
           headerCell8.setCellStyle(headerStyle);
+          
+          Cell headerCell9 = headerRow.createCell(8);
+          headerCell9.setCellValue("checkOut1");
+          headerCell9.setCellStyle(headerStyle);
+          
+          Cell headerCell10 = headerRow.createCell(9);
+          headerCell10.setCellValue("checkOut2");
+          headerCell10.setCellStyle(headerStyle);
+          
+          Cell headerCell11 = headerRow.createCell(10);
+          headerCell11.setCellValue("checkOut3");
+          headerCell11.setCellStyle(headerStyle);
 
           // Create data rows
           int rowNum = 13;
-          
+          int cellHight = 999; // Adjust this value as needed
+        
           CellStyle bStyle=bodyStyling(workbook);
           for (int i = 0; i < 50; i++) {
-              HSSFRow bodyrow = sheet.createRow(rowNum++);
+              XSSFRow bodyrow = sheet.createRow(rowNum++);
+              bodyrow.setHeight((short) cellHight);
               Cell bodyCell1 = bodyrow.createCell(1);
               bodyCell1.setCellValue("Name");
               bodyCell1.setCellStyle(bStyle);
@@ -697,43 +717,67 @@ public class RegController {
               Cell bodyCell8 = bodyrow.createCell(7);
               bodyCell8.setCellValue("checkOut");
               bodyCell8.setCellStyle(bStyle);
+              
+              Cell bodyCell9 = bodyrow.createCell(8);
+              bodyCell9.setCellValue("checkOut");
+              bodyCell9.setCellStyle(bStyle);
+              
+              Cell bodyCell10 = bodyrow.createCell(9);
+              bodyCell10.setCellValue("checkOut");
+              bodyCell10.setCellStyle(bStyle);
+              
+              Cell bodyCell11 = bodyrow.createCell(10);
+              bodyCell11.setCellValue("checkOut");
+              bodyCell11.setCellStyle(bStyle);
           }
-
+          
+          
+          XSSFRow bodyrow = sheet.createRow(rowNum+2);
+          Cell footercell = bodyrow.createCell(1);
+          footercell.setCellValue("Note: sasdadaddsfsdfsfdfsfsdfsdfdsfdsfdsfdsfdsfdsfsd");
+          sheet.addMergedRegion(new CellRangeAddress(rowNum+2, // first row (0-based)
+        		rowNum+2, // last row (0-based)
+                1, // first column (0-based)
+                10 // last column (0-based)
+          ));
+         
           // Set response headers
-          response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-          response.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
+//          response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//          response.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
 
           // Write the workbook to the response output stream
           try {
-			workbook.write(response.getOutputStream());
+			workbook.write(output);
 			workbook.close();
+			return output.toByteArray();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return bytes;
           
       }
-      
-      
-      private static void insertImageToCell(Workbook workbook, int rowNum, Drawing drawing) throws IOException {
-           
-          //Loading image from application resource
-    	  Resource resource = new ClassPathResource("\\static\\image\\alogo.png");
-  		  File file = resource.getFile();
-          FileInputStream imageFile = new FileInputStream(file.getPath());
-          byte[] bytes = IOUtils.toByteArray(imageFile);
-          int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-   
-          ClientAnchor anchor = null;
-          anchor.setCol1(1);
-          anchor.setCol2(2);
-          anchor.setRow1(2);
-          anchor.setRow2(3);
-          drawing.createPicture(anchor, pictureIdx);
-           
-      }
-      
-      public CellStyle headerStyling(HSSFWorkbook workbook) {
+//      
+//      
+//      private static void insertImageToCell(Workbook workbook, int rowNum, Drawing drawing) throws IOException {
+//           
+//          //Loading image from application resource
+//    	  Resource resource = new ClassPathResource("\\static\\image\\alogo.png");
+//  		  File file = resource.getFile();
+//          FileInputStream imageFile = new FileInputStream(file.getPath());
+//          byte[] bytes = IOUtils.toByteArray(imageFile);
+//          int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+//   
+//          ClientAnchor anchor = null;
+//          anchor.setCol1(1);
+//          anchor.setCol2(2);
+//          anchor.setRow1(2);
+//          anchor.setRow2(3);
+//          drawing.createPicture(anchor, pictureIdx);
+//           
+//      }
+//      
+      public CellStyle headerStyling(XSSFWorkbook workbook) {
     	  CellStyle headerStyle = workbook.createCellStyle();
           headerStyle.setAlignment(HorizontalAlignment.CENTER);
           headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -746,14 +790,15 @@ public class RegController {
           headerStyle.setBorderLeft(thickBorder);
           headerStyle.setBorderRight(thickBorder);
 
-          HSSFFont headerFont = workbook.createFont();
+          XSSFFont headerFont = workbook.createFont();
           headerFont.setBold(true);
           headerFont.setColor(blackColorIndex);
           headerStyle.setFont(headerFont);
     	  return headerStyle;
       }
       
-      public CellStyle bodyStyling(HSSFWorkbook workbook) {
+      
+      public CellStyle bodyStyling(XSSFWorkbook workbook) {
     	  CellStyle headerStyle = workbook.createCellStyle();
           headerStyle.setAlignment(HorizontalAlignment.CENTER);
           headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -766,11 +811,113 @@ public class RegController {
           headerStyle.setBorderLeft(thickBorder);
           headerStyle.setBorderRight(thickBorder);
 
-          HSSFFont headerFont = workbook.createFont();
+          XSSFFont headerFont = workbook.createFont();
           headerFont.setColor(blackColorIndex);
           headerStyle.setFont(headerFont);
     	  return headerStyle;
       }
+      
+      
+//      public void getExcel(HttpServletResponse response) throws IOException {
+//    	  ByteArrayOutputStream steream=new ByteArrayOutputStream();
+//    	  File file = new File("text.xlsx");
+//          Workbook workbook = new Workbook(new FileOutputStream(file),"Application","1.0");
+//          Worksheet worksheet = workbook.newWorksheet("Data");
+//
+//    
+//
+//          // Add the image to the worksheet
+//          addImageToWorksheet(worksheet);
+//
+//          // Create cell styles
+//         // Style headerStyle = workbook.newStyle().withFont(Font.boldSystemFont(15)).withColor(Color.BLACK).build();
+//         //Style bodyStyle = workbook.newStyle().withFont(Font.systemFont(11)).withColor(Color.BLACK).build();
+//
+//          // Create headers
+//          addHeaders(worksheet);
+//
+//          // Create data rows
+//          addDataRows(worksheet);
+//
+//          // Set response headers
+//          response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//          response.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
+//
+//          // Write the workbook to the response output stream
+//         
+//          workbook.finish();
+//          try (InputStream inputStream = new FileInputStream(file.getPath());
+//                  OutputStream outputStream = response.getOutputStream()) {
+//                 byte[] buffer = new byte[4096];
+//                 int bytesRead;
+//                 while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                     outputStream.write(buffer, 0, bytesRead);
+//                 }
+//             } catch (IOException e) {
+//                 e.printStackTrace();
+//                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//             }
+//      }
+//
+//      private void addImageToWorksheet(Worksheet worksheet) throws IOException {
+////    	  Resource resource = new ClassPathResource("\\static\\image\\alogo.png");
+////  		  File file = resource.getFile();
+////          ImageIcon image = new ImageIcon(file.getPath());
+//    	  worksheet.range(2, 3, 1, 2);
+//    	  
+// 
+//       
+//      }
+//      
+//
+//      private void addHeaders(Worksheet worksheet) {
+//          worksheet.value(1, 1, "Name");
+//          worksheet.value(1, 2, "Age");
+//          worksheet.value(1, 3, "Class");
+//          worksheet.value(1, 4, "Time");
+//          worksheet.value(1, 5, "CheckIn");
+//          worksheet.value(1, 6, "CheckOut");
+//          worksheet.value(1, 7, "CheckOut1");
+//          worksheet.value(1, 8, "CheckOut2");
+//          worksheet.value(1, 9, "CheckOut3");
+//      }
+//
+//      private void addDataRows(Worksheet worksheet) {
+//          int rowNum = 2;
+//          int cellHeight = 999; // Adjust as needed
+//
+//          for (int i = 0; i < 50; i++) {
+//              worksheet.value(rowNum, 1, "abcs");
+//              worksheet.value(rowNum, 2, "22");
+//              worksheet.value(rowNum, 3, "ssd");
+//              worksheet.value(rowNum, 4, "11.00");
+//              worksheet.value(rowNum, 5, "9.00");
+//              worksheet.value(rowNum, 6, "6.00");
+//              worksheet.value(rowNum, 7, "CheckOut1");
+//              worksheet.value(rowNum, 8, "CheckOut2");
+//              worksheet.value(rowNum, 9, "CheckOut3");
+//
+//              //worksheet.height(rowNum, cellHeight); // Set row height
+//
+//              rowNum++;
+//          }
+//      }
+      
+      
+
+@RequestMapping("/changelevel")
+   public String changeLogLevel(@RequestParam String loggerName, @RequestParam String level){
+       LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+       ch.qos.logback.classic.Logger logger = loggerName.equalsIgnoreCase("root")?
+               loggerContext.getLogger(loggerName):loggerContext.exists(loggerName);
+       if( logger !=null){
+           logger.setLevel(Level.toLevel(level));
+           return "Changed logger: "+loggerName+" to level : "+level;
+       } else {
+           return "Logger Not Found Make Sure that logger name is correct";
+       }
+   }    
     
+     
 	    
 }
