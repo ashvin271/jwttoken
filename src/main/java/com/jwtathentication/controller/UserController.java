@@ -30,4 +30,3 @@ public class UserController {
 		return new ResponseMessage<>(HttpStatus.OK.value(), "Successfully Get All User",userService.getAllUsers());
 	}
 }
-
